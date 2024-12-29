@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank to Tally Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #1a1423; /* Updated background color */
+        }
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 800px;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .output {
+            margin-top: 20px;
+        }
+        .output a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        .output a:hover {
+            text-decoration: underline;
+        }
+        #previewSection {
+            margin-top: 30px;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .scrollable-table {
+            max-height: 300px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Bank to Tally Converter</h1>
+        <input type="file" id="fileInput" accept=".csv" />
+        <button id="convertButton">Convert to Tally</button>
+
+        <div id="previewSection" class="output">
+            <h2>Preview of Converted Data</h2>
+            <div class="scrollable-table">
+                <table id="previewTable">
+                    <thead>
+                        <tr>
+                            <th>Voucher Date</th>
+                            <th>Voucher Type</th>
+                            <th>Narration</th>
+                            <th>Ledger Name</th>
+                            <th>Ledger Amount</th>
+                            <th>Ledger Amount Dr/Cr</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <button id="downloadButton" style="display:none;">Download Tally File</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('convertButton').addEventListener('click', function() {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) {
+                alert('Please upload a CSV file first.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const data = event.target.result;
+                const rows = data.split("\n").map(row => row.split(","));
+                const headers = rows[0];
+                const result = [];
+
+                // Task 1: Process CSV data mapping to Tally format
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row.length < 6) continue; // Skip incomplete rows
+
+                    const date = row[0];
+                    const narration = row[1];
+                    const withdrawal = row[4];
+                    const deposit = row[5];
+                    const voucherType = deposit ? 'GST_Tax' : 'Payment';
+                    const ledgerAmount = deposit || withdrawal;
+                    const voucherNumber = voucherType === 'GST_Tax' ? 125 + i : 441 + i;
+                    const ledgerName = narration.includes('CCAAIRTELIN') ? 'phone exp' :
+                                       narration.includes('TERMINAL 1 CARDS SETTL') ? 'TERMINAL' :
+                                       narration.includes('PHONEPE') ? 'phone Pe' : 'need clearup';
+
+                    result.push({
+                        voucherDate: date,
+                        voucherType: voucherType,
+                        voucherNumber: voucherNumber,
+                        narration: narration,
+                        ledgerName: ledgerName,
+                        ledgerAmount: ledgerAmount,
+                        drCr: voucherType === 'GST_Tax' ? 'Cr' : 'Dr'
+                    });
+
+                    // Task 2: Insert new row for 'HDFC'
+                    result.push({
+                        voucherDate: '',
+                        voucherType: '',
+                        voucherNumber: '',
+                        narration: '',
+                        ledgerName: 'HDFC',
+                        ledgerAmount: ledgerAmount,
+                        drCr: ''
+                    });
+                }
+
+                // Task 3: Add "Ledger Amount Dr/Cr" column
+                result.forEach((row, index) => {
+                    if (row.drCr === '') {
+                        row.drCr = result[index - 1] && result[index - 1].drCr === 'Cr' ? 'Dr' : 'Cr';
+                    }
+                });
+
+                // Display the preview in a table
+                const previewTableBody = document.getElementById('previewTable').querySelector('tbody');
+                previewTableBody.innerHTML = ''; // Clear previous data
+
+                result.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.voucherDate}</td>
+                        <td>${row.voucherType}</td>
+                        <td>${row.narration}</td>
+                        <td>${row.ledgerName}</td>
+                        <td>${row.ledgerAmount}</td>
+                        <td>${row.drCr}</td>
+                    `;
+                    previewTableBody.appendChild(tr);
+                });
+
+                // Show the preview section and download button
+                document.getElementById('previewSection').style.display = 'block';
+                document.getElementById('downloadButton').style.display = 'inline-block';
+
+                // Task 4: Create the downloadable file
+                document.getElementById('downloadButton').addEventListener('click', function() {
+                    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Tally_Converted_File.json';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            };
+
+            reader.readAsText(file);
+        });
+    </script>
+
+</body>
+</html>

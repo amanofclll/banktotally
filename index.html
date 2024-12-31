@@ -109,8 +109,9 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        document.getElementById('convertButton').addEventListener('click', function() {
+        document.getElementById('convertButton').addEventListener('click', function () {
             const file = document.getElementById('fileInput').files[0];
             if (!file) {
                 alert('Please upload a CSV file first.');
@@ -118,7 +119,7 @@
             }
 
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 const data = event.target.result;
                 const rows = data.split("\n").map(row => row.split(","));
                 const headers = rows[0];
@@ -137,8 +138,8 @@
                     const ledgerAmount = deposit || withdrawal;
                     const voucherNumber = voucherType === 'GST_Tax' ? 125 + i : 441 + i;
                     const ledgerName = narration.includes('CCAAIRTELIN') ? 'phone exp' :
-                                       narration.includes('TERMINAL 1 CARDS SETTL') ? 'TERMINAL' :
-                                       narration.includes('PHONEPE') ? 'phone Pe' : 'need clearup';
+                        narration.includes('TERMINAL 1 CARDS SETTL') ? 'TERMINAL' :
+                            narration.includes('PHONEPE') ? 'phone Pe' : 'need clearup';
 
                     result.push({
                         voucherDate: date,
@@ -190,15 +191,12 @@
                 document.getElementById('previewSection').style.display = 'block';
                 document.getElementById('downloadButton').style.display = 'inline-block';
 
-                // Task 4: Create the downloadable file
-                document.getElementById('downloadButton').addEventListener('click', function() {
-                    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'Tally_Converted_File.json';
-                    a.click();
-                    URL.revokeObjectURL(url);
+                // Task 4: Create the downloadable XLSX file
+                document.getElementById('downloadButton').addEventListener('click', function () {
+                    const ws = XLSX.utils.json_to_sheet(result);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "TallyData");
+                    XLSX.writeFile(wb, "Tally_Converted_File.xlsx");
                 });
             };
 

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bank to Tally Converter</title>
     <style>
+        /* Your existing styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -14,7 +15,7 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #1a1423; /* Updated background color */
+            background-color: #1a1423;
         }
         .container {
             background: #ffffff;
@@ -30,6 +31,12 @@
         }
         input[type="file"] {
             margin: 20px 0;
+        }
+        input[type="number"] {
+            padding: 5px;
+            margin: 10px 0;
+            width: 80px;
+            font-size: 16px;
         }
         button {
             background-color: #4CAF50;
@@ -85,6 +92,19 @@
 
     <div class="container">
         <h1>Bank to Tally Converter</h1>
+
+        <label for="gstVoucherStart">GST_Tax Voucher Start Number:</label>
+        <input type="number" id="gstVoucherStart" value="125" />
+        
+        <label for="paymentVoucherStart">Payment Voucher Start Number:</label>
+        <input type="number" id="paymentVoucherStart" value="441" />
+        
+        <br><br>
+        
+        <input type="file" id="containerConverterInput" accept=".csv" />
+        <button id="uploadMappingButton">Upload Container & Converter CSV</button>
+        <br><br>
+        
         <input type="file" id="fileInput" accept=".csv" />
         <button id="convertButton">Convert to Tally</button>
 
@@ -94,6 +114,7 @@
                 <table id="previewTable">
                     <thead>
                         <tr>
+                            <th>Voucher Number</th>
                             <th>Voucher Date</th>
                             <th>Voucher Type</th>
                             <th>Narration</th>
@@ -111,10 +132,39 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
+        let containerConverterMap = {};
+        let gstVoucherCounter, paymentVoucherCounter;
+
+        document.getElementById('uploadMappingButton').addEventListener('click', function () {
+            const file = document.getElementById('containerConverterInput').files[0];
+            if (!file) {
+                alert('Please upload the Container & Converter CSV file first.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const data = event.target.result;
+                const rows = data.split("\n").map(row => row.split(","));
+                rows.forEach(row => {
+                    const [container, converter] = row.map(cell => cell.trim());
+                    if (container && converter) {
+                        containerConverterMap[container] = converter;
+                    }
+                });
+                alert('Container & Converter mappings uploaded successfully!');
+            };
+            reader.readAsText(file);
+        });
+
         document.getElementById('convertButton').addEventListener('click', function () {
+            // Get the starting voucher numbers from input fields
+            gstVoucherCounter = parseInt(document.getElementById('gstVoucherStart').value);
+            paymentVoucherCounter = parseInt(document.getElementById('paymentVoucherStart').value);
+
             const file = document.getElementById('fileInput').files[0];
             if (!file) {
-                alert('Please upload a CSV file first.');
+                alert('Please upload a Bank CSV file first.');
                 return;
             }
 
@@ -125,10 +175,9 @@
                 const headers = rows[0];
                 const result = [];
 
-                // Task 1: Process CSV data mapping to Tally format
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
-                    if (row.length < 6) continue; // Skip incomplete rows
+                    if (row.length < 6) continue;
 
                     const date = row[0];
                     const narration = row[1];
@@ -136,26 +185,30 @@
                     const deposit = row[5];
                     const voucherType = deposit ? 'GST_Tax' : 'Payment';
                     const ledgerAmount = deposit || withdrawal;
-                    const voucherNumber = voucherType === 'GST_Tax' ? 125 + i : 441 + i;
-                    const ledgerName = narration.includes('CCAAIRTELIN') ? 'phone exp' :
-                        narration.includes('TERMINAL 1 CARDS SETTL') ? 'TERMINAL' :
-                            narration.includes('PHONEPE') ? 'phone Pe' : 'need clearup';
+                    const ledgerName = Object.keys(containerConverterMap).find(container =>
+                        narration.includes(container)) || 'need clearup';
+
+                    let voucherNumber = '';
+                    if (voucherType === 'GST_Tax') {
+                        voucherNumber = gstVoucherCounter++;
+                    } else if (voucherType === 'Payment') {
+                        voucherNumber = paymentVoucherCounter++;
+                    }
 
                     result.push({
+                        voucherNumber: voucherNumber,
                         voucherDate: date,
                         voucherType: voucherType,
-                        voucherNumber: voucherNumber,
                         narration: narration,
-                        ledgerName: ledgerName,
+                        ledgerName: containerConverterMap[ledgerName] || 'need clearup',
                         ledgerAmount: ledgerAmount,
                         drCr: voucherType === 'GST_Tax' ? 'Cr' : 'Dr'
                     });
 
-                    // Task 2: Insert new row for 'HDFC'
                     result.push({
+                        voucherNumber: '',
                         voucherDate: '',
                         voucherType: '',
-                        voucherNumber: '',
                         narration: '',
                         ledgerName: 'HDFC',
                         ledgerAmount: ledgerAmount,
@@ -163,20 +216,13 @@
                     });
                 }
 
-                // Task 3: Add "Ledger Amount Dr/Cr" column
-                result.forEach((row, index) => {
-                    if (row.drCr === '') {
-                        row.drCr = result[index - 1] && result[index - 1].drCr === 'Cr' ? 'Dr' : 'Cr';
-                    }
-                });
-
-                // Display the preview in a table
                 const previewTableBody = document.getElementById('previewTable').querySelector('tbody');
-                previewTableBody.innerHTML = ''; // Clear previous data
+                previewTableBody.innerHTML = '';
 
                 result.forEach(row => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
+                        <td>${row.voucherNumber}</td>
                         <td>${row.voucherDate}</td>
                         <td>${row.voucherType}</td>
                         <td>${row.narration}</td>
@@ -187,11 +233,9 @@
                     previewTableBody.appendChild(tr);
                 });
 
-                // Show the preview section and download button
                 document.getElementById('previewSection').style.display = 'block';
                 document.getElementById('downloadButton').style.display = 'inline-block';
 
-                // Task 4: Create the downloadable XLSX file
                 document.getElementById('downloadButton').addEventListener('click', function () {
                     const ws = XLSX.utils.json_to_sheet(result);
                     const wb = XLSX.utils.book_new();

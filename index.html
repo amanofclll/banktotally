@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bank to Tally Converter</title>
     <style>
-        /* Your existing styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -16,9 +15,10 @@
             justify-content: center;
             height: 100vh;
             background-color: #1a1423;
+            color: white;
         }
         .container {
-            background: #ffffff;
+            background: #333;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -27,16 +27,16 @@
             max-width: 800px;
         }
         h1 {
-            color: #333;
+            color: #ffffff;
         }
-        input[type="file"] {
+        input[type="file"], input[type="number"], input[type="password"] {
             margin: 20px 0;
-        }
-        input[type="number"] {
-            padding: 5px;
-            margin: 10px 0;
-            width: 80px;
-            font-size: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 80%;
+            background-color: #2c2f38;
+            color: white;
         }
         button {
             background-color: #4CAF50;
@@ -67,67 +67,111 @@
             overflow-y: auto;
             border-top: 1px solid #ddd;
             padding-top: 20px;
+            width: 100%;
         }
         table {
-            width: 100%;
+            width: 95%;
             border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
+            margin: 0 auto;
+            background-color: #333;
+            color: white;
         }
         th, td {
             padding: 8px;
             text-align: center;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #444;
+        }
+        td {
+            background-color: #555;
         }
         .scrollable-table {
             max-height: 300px;
             overflow-y: scroll;
         }
+        .step-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .step-button:hover {
+            background-color: #006BB3;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div id="loginSection" class="container">
         <h1>Bank to Tally Converter</h1>
+
+        <label for="password">Enter Password:</label>
+        <input type="password" id="password" />
+        <button id="loginButton">Login</button>
+
+        <p id="errorMessage" class="error-message" style="display: none;">Incorrect password. Please try again.</p>
+    </div>
+
+    <div id="step1Section" class="container" style="display:none;">
+        <h1>Step 1: Set Voucher Numbers</h1>
 
         <label for="gstVoucherStart">GST_Tax Voucher Start Number:</label>
         <input type="number" id="gstVoucherStart" value="125" />
         
         <label for="paymentVoucherStart">Payment Voucher Start Number:</label>
         <input type="number" id="paymentVoucherStart" value="441" />
-        
-        <br><br>
-        
-        <input type="file" id="containerConverterInput" accept=".csv" />
-        <button id="uploadMappingButton">Upload Container & Converter CSV</button>
-        <br><br>
-        
-        <input type="file" id="fileInput" accept=".csv" />
-        <button id="convertButton">Convert to Tally</button>
 
-        <div id="previewSection" class="output">
-            <h2>Preview of Converted Data</h2>
-            <div class="scrollable-table">
-                <table id="previewTable">
-                    <thead>
-                        <tr>
-                            <th>Voucher Number</th>
-                            <th>Voucher Date</th>
-                            <th>Voucher Type</th>
-                            <th>Narration</th>
-                            <th>Ledger Name</th>
-                            <th>Ledger Amount</th>
-                            <th>Ledger Amount Dr/Cr</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <button id="downloadButton" style="display:none;">Download Tally File</button>
+        <br><br>
+
+        <button id="nextStep1Button" class="step-button">Next: Upload Container & Converter CSV</button>
+    </div>
+
+    <div id="step2Section" class="container" style="display:none;">
+        <h1>Step 2: Upload Container & Converter CSV</h1>
+
+        <input type="file" id="containerConverterInput" accept=".csv" />
+        <button id="uploadMappingButton" class="step-button">Upload Container & Converter CSV</button>
+
+        <br><br>
+
+        <button id="nextStep2Button" class="step-button" style="display:none;">Next: Upload Bank Statement File</button>
+    </div>
+
+    <div id="step3Section" class="container" style="display:none;">
+        <h1>Step 3: Upload Bank Statement File</h1>
+
+        <input type="file" id="fileInput" accept=".csv" />
+        <button id="convertButton" class="step-button">Convert to Tally</button>
+    </div>
+
+    <div id="previewSection" class="output">
+        <h2>Preview of Converted Data</h2>
+        <div class="scrollable-table">
+            <table id="previewTable">
+                <thead>
+                    <tr>
+                        <th>Voucher Number</th>
+                        <th>Voucher Date</th>
+                        <th>Voucher Type</th>
+                        <th>Narration</th>
+                        <th>Ledger Name</th>
+                        <th>Ledger Amount</th>
+                        <th>Ledger Amount Dr/Cr</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
+        <button id="downloadButton" class="step-button" style="display:none;">Download Tally File</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -135,6 +179,36 @@
         let containerConverterMap = {};
         let gstVoucherCounter, paymentVoucherCounter;
 
+        const correctPassword = "caconsult";
+        let convertedData = [];
+
+        // Login functionality
+        document.getElementById('loginButton').addEventListener('click', function () {
+            const enteredPassword = document.getElementById('password').value;
+
+            if (enteredPassword === correctPassword) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('step1Section').style.display = 'block';
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+
+        // Step 1: Set Voucher Numbers
+        document.getElementById('nextStep1Button').addEventListener('click', function () {
+            gstVoucherCounter = parseInt(document.getElementById('gstVoucherStart').value);
+            paymentVoucherCounter = parseInt(document.getElementById('paymentVoucherStart').value);
+
+            if (isNaN(gstVoucherCounter) || isNaN(paymentVoucherCounter)) {
+                alert("Please enter valid voucher numbers.");
+                return;
+            }
+
+            document.getElementById('step1Section').style.display = 'none';
+            document.getElementById('step2Section').style.display = 'block';
+        });
+
+        // Step 2: Upload Container & Converter CSV
         document.getElementById('uploadMappingButton').addEventListener('click', function () {
             const file = document.getElementById('containerConverterInput').files[0];
             if (!file) {
@@ -153,15 +227,19 @@
                     }
                 });
                 alert('Container & Converter mappings uploaded successfully!');
+                document.getElementById('nextStep2Button').style.display = 'inline-block';
             };
             reader.readAsText(file);
         });
 
-        document.getElementById('convertButton').addEventListener('click', function () {
-            // Get the starting voucher numbers from input fields
-            gstVoucherCounter = parseInt(document.getElementById('gstVoucherStart').value);
-            paymentVoucherCounter = parseInt(document.getElementById('paymentVoucherStart').value);
+        // Go to next step after uploading CSV
+        document.getElementById('nextStep2Button').addEventListener('click', function () {
+            document.getElementById('step2Section').style.display = 'none';
+            document.getElementById('step3Section').style.display = 'block';
+        });
 
+        // Step 3: Upload Bank Statement File
+        document.getElementById('convertButton').addEventListener('click', function () {
             const file = document.getElementById('fileInput').files[0];
             if (!file) {
                 alert('Please upload a Bank CSV file first.');
@@ -173,7 +251,7 @@
                 const data = event.target.result;
                 const rows = data.split("\n").map(row => row.split(","));
                 const headers = rows[0];
-                const result = [];
+                convertedData = [];
 
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
@@ -186,7 +264,7 @@
                     const voucherType = deposit ? 'GST_Tax' : 'Payment';
                     const ledgerAmount = deposit || withdrawal;
                     const ledgerName = Object.keys(containerConverterMap).find(container =>
-                        narration.includes(container)) || 'need clearup';
+                        narration.toLowerCase().includes(container.toLowerCase())) || 'need clearup';
 
                     let voucherNumber = '';
                     if (voucherType === 'GST_Tax') {
@@ -195,7 +273,7 @@
                         voucherNumber = paymentVoucherCounter++;
                     }
 
-                    result.push({
+                    convertedData.push({
                         voucherNumber: voucherNumber,
                         voucherDate: date,
                         voucherType: voucherType,
@@ -205,46 +283,49 @@
                         drCr: voucherType === 'GST_Tax' ? 'Cr' : 'Dr'
                     });
 
-                    result.push({
+                    convertedData.push({
                         voucherNumber: '',
                         voucherDate: '',
                         voucherType: '',
                         narration: '',
                         ledgerName: 'HDFC',
                         ledgerAmount: ledgerAmount,
-                        drCr: ''
+                        drCr: 'Dr'
                     });
                 }
 
-                const previewTableBody = document.getElementById('previewTable').querySelector('tbody');
-                previewTableBody.innerHTML = '';
-
-                result.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.voucherNumber}</td>
-                        <td>${row.voucherDate}</td>
-                        <td>${row.voucherType}</td>
-                        <td>${row.narration}</td>
-                        <td>${row.ledgerName}</td>
-                        <td>${row.ledgerAmount}</td>
-                        <td>${row.drCr}</td>
-                    `;
-                    previewTableBody.appendChild(tr);
-                });
-
-                document.getElementById('previewSection').style.display = 'block';
-                document.getElementById('downloadButton').style.display = 'inline-block';
-
-                document.getElementById('downloadButton').addEventListener('click', function () {
-                    const ws = XLSX.utils.json_to_sheet(result);
-                    const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, "TallyData");
-                    XLSX.writeFile(wb, "Tally_Converted_File.xlsx");
-                });
+                previewConvertedData();
             };
-
             reader.readAsText(file);
+        });
+
+        // Preview Converted Data
+        function previewConvertedData() {
+            const previewTableBody = document.getElementById('previewTable').getElementsByTagName('tbody')[0];
+            previewTableBody.innerHTML = '';
+            convertedData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.voucherNumber}</td>
+                    <td>${row.voucherDate}</td>
+                    <td>${row.voucherType}</td>
+                    <td>${row.narration}</td>
+                    <td>${row.ledgerName}</td>
+                    <td>${row.ledgerAmount}</td>
+                    <td>${row.drCr}</td>
+                `;
+                previewTableBody.appendChild(tr);
+            });
+            document.getElementById('previewSection').style.display = 'block';
+            document.getElementById('downloadButton').style.display = 'inline-block';
+        }
+
+        // Download converted data as an Excel file
+        document.getElementById('downloadButton').addEventListener('click', function () {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(convertedData);
+            XLSX.utils.book_append_sheet(wb, ws, "Converted Data");
+            XLSX.writeFile(wb, "converted_tally.xlsx");
         });
     </script>
 

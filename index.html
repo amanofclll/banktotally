@@ -164,7 +164,15 @@
         <h1>Step 3: Upload Bank Statement File</h1>
         <div class="input-group">
             <label for="bankName">Enter Bank Name:</label>
-            <input type="text" id="bankName" value="HDFC" />
+            <input type="text" id="bankName" value="Input_bankName" />
+        </div>
+        <div class="input-group">
+            <label for="gstVoucherType">Enter GST_Tax Voucher Type:</label>
+            <input type="text" id="gstVoucherType" value="Input_gstVoucherType" />
+        </div>
+        <div class="input-group">
+            <label for="paymentVoucherType">Enter Payment Voucher Type:</label>
+            <input type="text" id="paymentVoucherType" value="Input_paymentVoucherType" />
         </div>
         <input type="file" id="fileInput" accept=".csv" />
         <div class="button-container">
@@ -266,14 +274,16 @@
         document.getElementById('convertButton').addEventListener('click', function() {
             const file = document.getElementById('fileInput').files[0];
             const bankName = document.getElementById('bankName').value.trim();
+            const gstVoucherType = document.getElementById('gstVoucherType').value.trim();
+            const paymentVoucherType = document.getElementById('paymentVoucherType').value.trim();
             
             if (!file) {
                 alert('Please upload a Bank CSV file first.');
                 return;
             }
 
-            if (!bankName) {
-                alert('Please enter a bank name.');
+            if (!bankName || !gstVoucherType || !paymentVoucherType) {
+                alert('Please enter all required fields (Bank Name, GST_Tax Type, and Payment Type).');
                 return;
             }
 
@@ -292,15 +302,15 @@
                     const narration = row[1];
                     const withdrawal = row[4];
                     const deposit = row[5];
-                    const voucherType = deposit ? 'GST_Tax' : 'Payment';
+                    const voucherType = deposit ? gstVoucherType : paymentVoucherType;
                     const ledgerAmount = deposit || withdrawal;
                     const ledgerName = Object.keys(containerConverterMap).find(container =>
                         narration.toLowerCase().includes(container.toLowerCase())) || 'need clearup';
 
                     let voucherNumber = '';
-                    if (voucherType === 'GST_Tax') {
+                    if (deposit) {
                         voucherNumber = gstVoucherCounter++;
-                    } else if (voucherType === 'Payment') {
+                    } else {
                         voucherNumber = paymentVoucherCounter++;
                     }
 
@@ -311,7 +321,7 @@
                         narration: narration,
                         ledgerName: containerConverterMap[ledgerName] || 'need clearup',
                         ledgerAmount: ledgerAmount,
-                        drCr: voucherType === 'GST_Tax' ? 'Cr' : 'Dr'
+                        drCr: deposit ? 'Cr' : 'Dr'
                     });
 
                     convertedData.push({
@@ -321,7 +331,7 @@
                         narration: '',
                         ledgerName: bankName,
                         ledgerAmount: ledgerAmount,
-                        drCr: voucherType === 'GST_Tax' ? 'Dr' : 'Cr'
+                        drCr: deposit ? 'Dr' : 'Cr'
                     });
                 }
 

@@ -17,7 +17,28 @@
             background-color: #1a1423;
             color: white;
         }
+        .branding {
+            width: 100%;
+            background: #333;
+            padding: 20px 0;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .branding img {
+            height: 60px;
+            margin-right: 20px;
+        }
+        .branding-text {
+            color: #ffffff;
+            font-size: 14px;
+            margin-top: 5px;
+        }
         .container {
+            margin-top: 120px;
             background: #333;
             padding: 20px;
             border-radius: 10px;
@@ -131,6 +152,11 @@
     </style>
 </head>
 <body>
+    <div class="branding">
+        <img src="https://www.growbrandindia.in/web/image/website/1/logo/growbrandindia.in?unique=58ac854" alt="Growbrandindia.in Logo">
+        <div class="branding-text">Made by Growbrandindia.in</div>
+    </div>
+
     <div id="loginSection" class="container">
         <h1>Bank to Tally Converter</h1>
         <label for="password">Enter Password:</label>
@@ -205,10 +231,9 @@
     <script>
         let containerConverterMap = {};
         let gstVoucherCounter, paymentVoucherCounter;
-        const correctPassword = "123";
+        const correctPassword = "aman123";
         let convertedData = [];
 
-        // Login functionality
         document.getElementById('loginButton').addEventListener('click', function() {
             const enteredPassword = document.getElementById('password').value;
             if (enteredPassword === correctPassword) {
@@ -219,14 +244,12 @@
             }
         });
 
-        // Password Enter key support
         document.getElementById('password').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 document.getElementById('loginButton').click();
             }
         });
 
-        // Step 1: Set Voucher Numbers
         document.getElementById('nextStep1Button').addEventListener('click', function() {
             gstVoucherCounter = parseInt(document.getElementById('gstVoucherStart').value);
             paymentVoucherCounter = parseInt(document.getElementById('paymentVoucherStart').value);
@@ -240,7 +263,6 @@
             document.getElementById('step2Section').style.display = 'block';
         });
 
-        // Step 2: Upload Container & Converter CSV
         document.getElementById('uploadMappingButton').addEventListener('click', function() {
             const file = document.getElementById('containerConverterInput').files[0];
             if (!file) {
@@ -264,13 +286,11 @@
             reader.readAsText(file);
         });
 
-        // Go to next step after uploading CSV
         document.getElementById('nextStep2Button').addEventListener('click', function() {
             document.getElementById('step2Section').style.display = 'none';
             document.getElementById('step3Section').style.display = 'block';
         });
 
-        // Step 3: Upload Bank Statement File
         document.getElementById('convertButton').addEventListener('click', function() {
             const file = document.getElementById('fileInput').files[0];
             const bankName = document.getElementById('bankName').value.trim();
@@ -340,7 +360,6 @@
             reader.readAsText(file);
         });
 
-        // Preview Converted Data
         function previewConvertedData() {
             const previewTableBody = document.getElementById('previewTable').getElementsByTagName('tbody')[0];
             previewTableBody.innerHTML = '';
@@ -361,7 +380,6 @@
             document.getElementById('downloadButton').style.display = 'inline-block';
         }
 
-        // Download converted data as an Excel file
         document.getElementById('downloadButton').addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet(convertedData);
@@ -371,3 +389,66 @@
     </script>
 </body>
 </html>
+
+<script>
+    // Protection Check Function
+    function checkCodeIntegrity() {
+        const protectedElements = {
+            logo: "https://www.growbrandindia.in/web/image/website/1/logo/growbrandindia.in?unique=58ac854",
+            brandingText: "Made by Growbrandindia.in",
+            title: "Bank to Tally Converter"
+        };
+
+        // Check logo
+        const logoImg = document.querySelector('.branding img');
+        if (!logoImg || logoImg.src !== protectedElements.logo) {
+            document.body.innerHTML = '<div style="color: white; text-align: center; padding: 50px;">Unauthorized modification detected. Please contact the administrator.</div>';
+            return false;
+        }
+
+        // Check branding text
+        const brandText = document.querySelector('.branding-text');
+        if (!brandText || brandText.textContent !== protectedElements.brandingText) {
+            document.body.innerHTML = '<div style="color: white; text-align: center; padding: 50px;">Unauthorized modification detected. Please contact the administrator.</div>';
+            return false;
+        }
+
+        // Check title
+        const mainTitle = document.querySelector('h1');
+        if (!mainTitle || mainTitle.textContent !== protectedElements.title) {
+            document.body.innerHTML = '<div style="color: white; text-align: center; padding: 50px;">Unauthorized modification detected. Please contact the administrator.</div>';
+            return false;
+        }
+
+        return true;
+    }
+
+    // Run check on load and periodically
+    window.addEventListener('load', function() {
+        if (!checkCodeIntegrity()) {
+            // Disable all functionality
+            document.querySelectorAll('button, input').forEach(element => {
+                element.disabled = true;
+            });
+        }
+    });
+
+    // Periodic check every 5 seconds
+    setInterval(checkCodeIntegrity, 5000);
+
+    // Prevent inspection
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) ||
+            (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
+        ) {
+            e.preventDefault();
+        }
+    });
+</script>

@@ -1,529 +1,483 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Bank to Tally Converter</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #27ae60;
-            --background-color: #f8f9fa;
-            --text-color: #2c3e50;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-
-        .container-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: var(--primary-color);
-            color: white;
-            padding: 20px;
-            position: fixed;
-            height: 100%;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-        }
-
-        .logo-section {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 30px;
-        }
-
-        .logo-section img {
-            height: 50px;
-            margin-bottom: 10px;
-        }
-
-        .nav-steps {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-steps li {
-            margin: 15px 0;
-            padding: 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-steps li.active {
-            background: var(--secondary-color);
-        }
-
-        .nav-steps li.completed {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .main-content {
-            margin-left: 280px;
-            padding: 30px;
-            width: calc(100% - 280px);
-        }
-
-        .step-card {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            display: none;
-        }
-
-        .step-card.active {
-            display: block;
-        }
-
-        .step-header {
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .step-title {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin: 0;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-success {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .data-preview {
-            margin-top: 30px;
-            overflow-x: auto;
-        }
-
-        .preview-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .preview-table th,
-        .preview-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        .preview-table th {
-            background: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-
-        .preview-table tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .file-upload {
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .file-upload:hover {
-            border-color: var(--secondary-color);
-            background: rgba(52,152,219,0.05);
-        }
-
-        .error-message {
-            color: #e74c3c;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            background: #f8d7da;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Professional Bank to Tally Converter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --success-color: #27ae60;
+      --background-color: #f8f9fa;
+      --text-color: #2c3e50;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-color);
+      color: var(--text-color);
+    }
+    .container-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 280px;
+      background: var(--primary-color);
+      color: white;
+      padding: 20px;
+      position: fixed;
+      height: 100%;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .logo-section {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 30px;
+    }
+    .logo-section img {
+      height: 50px;
+      margin-bottom: 10px;
+    }
+    .nav-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-steps li {
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-steps li.active {
+      background: var(--secondary-color);
+    }
+    .nav-steps li.completed {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .main-content {
+      margin-left: 280px;
+      padding: 30px;
+      width: calc(100% - 280px);
+    }
+    .step-card {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+    .step-card.active {
+      display: block;
+    }
+    .step-header {
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+    }
+    .step-title {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      margin: 0;
+    }
+    .header-actions {
+      margin-left: auto;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: var(--secondary-color);
+      color: white;
+    }
+    .btn-success {
+      background: var(--success-color);
+      color: white;
+    }
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .data-preview {
+      margin-top: 30px;
+      overflow-x: auto;
+    }
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .preview-table th,
+    .preview-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .preview-table th {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 600;
+    }
+    .preview-table tr:hover {
+      background-color: #f8f9fa;
+    }
+    .file-upload {
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .file-upload:hover {
+      border-color: var(--secondary-color);
+      background: rgba(52, 152, 219, 0.05);
+    }
+    .error-message {
+      color: #e74c3c;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      background: #f8d7da;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container-wrapper">
-        <nav class="sidebar">
-            <div class="logo-section">
-                <img src="https://www.growbrandindia.in/web/image/website/1/logo/growbrandindia.in?unique=58ac854" alt="GBI Logo">
-                <h3>Bank to Tally Converter</h3>
-                <p>Tool By Growbrandindia.in</p>
-            </div>
+  <div class="container-wrapper">
+    <nav class="sidebar">
+      <div class="logo-section">
+        <img src="https://www.growbrandindia.in/web/image/website/1/logo/growbrandindia.in?unique=58ac854" alt="GBI Logo" />
+        <h3>Bank to Tally Converter</h3>
+        <p>Tool By Growbrandindia.in</p>
+      </div>
+      <ul class="nav-steps">
+        <li data-step="config" class="active"><i class="fas fa-cog"></i> Configuration</li>
+        <li data-step="upload"><i class="fas fa-file-upload"></i> File Upload</li>
+        <li data-step="preview"><i class="fas fa-table"></i> Data Preview</li>
+        <li data-step="export"><i class="fas fa-download"></i> Export</li>
+      </ul>
+    </nav>
+    <main class="main-content">
+      <!-- Configuration Step -->
+      <div class="step-card active" id="configStep">
+        <div class="step-header">
+          <h2 class="step-title"><i class="fas fa-cog"></i> System Configuration</h2>
+        </div>
+        <div class="form-group">
+          <label>Voucher Settings:</label>
+          <input type="number" id="gstStart" class="form-control" placeholder="GST Voucher Start" value="125" />
+          <input type="number" id="paymentStart" class="form-control mt-2" placeholder="Payment Voucher Start" value="441" />
+        </div>
+        <div class="form-group">
+          <label>Bank Details:</label>
+          <input type="text" id="bankName" class="form-control" placeholder="Bank Name" />
+          <input type="text" id="gstVoucherType" class="form-control mt-2" placeholder="GST Voucher Type" />
+          <input type="text" id="paymentVoucherType" class="form-control mt-2" placeholder="Payment Voucher Type" />
+        </div>
+        <button class="btn btn-primary" id="saveConfig">
+          <i class="fas fa-save"></i> Save Configuration
+        </button>
+        <div class="error-message" id="configError"></div>
+      </div>
 
-            <ul class="nav-steps">
-                <li data-step="auth" class="active"><i class="fas fa-lock"></i> Authentication</li>
-                <li data-step="config"><i class="fas fa-cog"></i> Configuration</li>
-                <li data-step="upload"><i class="fas fa-file-upload"></i> File Upload</li>
-                <li data-step="preview"><i class="fas fa-table"></i> Data Preview</li>
-                <li data-step="export"><i class="fas fa-download"></i> Export</li>
-            </ul>
-        </nav>
+      <!-- File Upload Step -->
+      <div class="step-card" id="uploadStep">
+        <div class="step-header">
+          <h2 class="step-title"><i class="fas fa-file-upload"></i> File Upload</h2>
+        </div>
+        <div class="file-upload">
+          <h4><i class="fas fa-file-csv"></i> Mapping CSV</h4>
+          <input type="file" id="mappingFile" class="form-control mt-3" accept=".csv" />
+          <div id="mappingStatus" class="mt-2"></div>
+        </div>
+        <div class="file-upload mt-4">
+          <h4><i class="fas fa-file-excel"></i> Bank Statement</h4>
+          <input type="file" id="bankFile" class="form-control mt-3" accept=".csv" />
+          <div id="bankStatus" class="mt-2"></div>
+        </div>
+        <div class="error-message" id="uploadError"></div>
+      </div>
 
-        <main class="main-content">
-            <!-- Authentication Step -->
-            <div class="step-card active" id="authStep">
-                <div class="step-header">
-                    <h2 class="step-title"><i class="fas fa-lock"></i> Secure Authentication</h2>
-                </div>
-                <div class="form-group">
-                    <label>Security Credentials:</label>
-                    <input type="password" id="password" class="form-control" placeholder="Enter your secure passphrase">
-                </div>
-                <button class="btn btn-primary" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> Authenticate
-                </button>
-                <div class="error-message" id="authError"></div>
-            </div>
+      <!-- Preview Step -->
+      <div class="step-card" id="previewStep">
+        <div class="step-header">
+          <h2 class="step-title"><i class="fas fa-table"></i> Conversion Preview</h2>
+          <!-- Refresh Button placed at the right -->
+          <div class="header-actions">
+            <button class="btn btn-primary" id="refreshBtn">
+              <i class="fas fa-sync"></i> Refresh Data
+            </button>
+          </div>
+        </div>
+        <div class="data-preview">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>Voucher No</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Narration</th>
+                <th>Ledger</th>
+                <th>Amount</th>
+                <th>Dr/Cr</th>
+              </tr>
+            </thead>
+            <tbody id="previewBody"></tbody>
+          </table>
+        </div>
+      </div>
 
-            <!-- Configuration Step -->
-            <div class="step-card" id="configStep">
-                <div class="step-header">
-                    <h2 class="step-title"><i class="fas fa-cog"></i> System Configuration</h2>
-                </div>
-                <div class="form-group">
-                    <label>Voucher Settings:</label>
-                    <input type="number" id="gstStart" class="form-control" placeholder="GST Voucher Start" value="125">
-                    <input type="number" id="paymentStart" class="form-control mt-2" placeholder="Payment Voucher Start" value="441">
-                </div>
-                <div class="form-group">
-                    <label>Bank Details:</label>
-                    <input type="text" id="bankName" class="form-control" placeholder="Bank Name">
-                    <input type="text" id="gstVoucherType" class="form-control mt-2" placeholder="GST Voucher Type">
-                    <input type="text" id="paymentVoucherType" class="form-control mt-2" placeholder="Payment Voucher Type">
-                </div>
-                <button class="btn btn-primary" id="saveConfig">
-                    <i class="fas fa-save"></i> Save Configuration
-                </button>
-                <div class="error-message" id="configError"></div>
-            </div>
+      <!-- Export Step -->
+      <div class="step-card" id="exportStep">
+        <div class="step-header">
+          <h2 class="step-title"><i class="fas fa-download"></i> Export</h2>
+        </div>
+        <button class="btn btn-success" id="exportBtn">
+          <i class="fas fa-download"></i> Export to Excel
+        </button>
+      </div>
+    </main>
+  </div>
 
-            <!-- File Upload Step -->
-            <div class="step-card" id="uploadStep">
-                <div class="step-header">
-                    <h2 class="step-title"><i class="fas fa-file-upload"></i> File Upload</h2>
-                </div>
-                <div class="file-upload">
-                    <h4><i class="fas fa-file-csv"></i> Mapping CSV</h4>
-                    <input type="file" id="mappingFile" class="form-control mt-3" accept=".csv">
-                    <div id="mappingStatus" class="mt-2"></div>
-                </div>
-                <div class="file-upload mt-4">
-                    <h4><i class="fas fa-file-excel"></i> Bank Statement</h4>
-                    <input type="file" id="bankFile" class="form-control mt-3" accept=".csv">
-                    <div id="bankStatus" class="mt-2"></div>
-                </div>
-                <div class="error-message" id="uploadError"></div>
-            </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    // Global variables
+    let currentStep = 'config';
+    let containerMap = {};
+    let convertedData = [];
+    let config = {
+      gstStart: 125,
+      paymentStart: 441,
+      bankName: '',
+      gstType: '',
+      paymentType: ''
+    };
+    // Store the bank file text so we can refresh data later
+    let bankFileText = '';
 
-            <!-- Preview Step -->
-            <div class="step-card" id="previewStep">
-                <div class="step-header">
-                    <h2 class="step-title"><i class="fas fa-table"></i> Conversion Preview</h2>
-                </div>
-                <div class="data-preview">
-                    <table class="preview-table">
-                        <thead>
-                            <tr>
-                                <th>Voucher No</th>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Narration</th>
-                                <th>Ledger</th>
-                                <th>Amount</th>
-                                <th>Dr/Cr</th>
-                            </tr>
-                        </thead>
-                        <tbody id="previewBody"></tbody>
-                    </table>
-                </div>
-                <button class="btn btn-success mt-3" id="exportBtn">
-                    <i class="fas fa-download"></i> Export to Excel
-                </button>
-            </div>
-        </main>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script>
-        let currentStep = 'auth';
-        let containerMap = {};
-        let convertedData = [];
-        let config = {
-            gstStart: 125,
-            paymentStart: 441,
-            bankName: '',
-            gstType: '',
-            paymentType: ''
-        };
-
-        // Step Management
-        function showStep(step) {
-            document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
-            document.getElementById(`${step}Step`).classList.add('active');
-            currentStep = step;
-            updateNavigation();
+    // Step Management
+    function showStep(step) {
+      document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
+      document.getElementById(`${step}Step`).classList.add('active');
+      currentStep = step;
+      updateNavigation();
+    }
+    function updateNavigation() {
+      const steps = ['config', 'upload', 'preview', 'export'];
+      const navItems = document.querySelectorAll('.nav-steps li');
+      navItems.forEach((item, index) => {
+        item.classList.remove('active', 'completed');
+        if (steps[index] === currentStep) {
+          item.classList.add('active');
+        } else if (steps.indexOf(currentStep) > index) {
+          item.classList.add('completed');
         }
+      });
+    }
+    // Make the left navigation menu clickable
+    document.querySelectorAll('.nav-steps li').forEach(item => {
+      item.addEventListener('click', () => {
+        const step = item.getAttribute('data-step');
+        showStep(step);
+      });
+    });
+    // Event Listeners
+    document.getElementById('saveConfig').addEventListener('click', () => {
+      config.gstStart = parseInt(document.getElementById('gstStart').value);
+      config.paymentStart = parseInt(document.getElementById('paymentStart').value);
+      config.bankName = document.getElementById('bankName').value;
+      config.gstType = document.getElementById('gstVoucherType').value;
+      config.paymentType = document.getElementById('paymentVoucherType').value;
+      if (!validateConfig()) return;
+      showStep('upload');
+    });
+    document.getElementById('mappingFile').addEventListener('change', processMappingFile);
+    document.getElementById('bankFile').addEventListener('change', processBankFile);
+    document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+    document.getElementById('refreshBtn').addEventListener('click', refreshData);
 
-        function updateNavigation() {
-            const steps = ['auth', 'config', 'upload', 'preview', 'export'];
-            const navItems = document.querySelectorAll('.nav-steps li');
-            
-            navItems.forEach((item, index) => {
-                item.classList.remove('active', 'completed');
-                if(steps[index] === currentStep) {
-                    item.classList.add('active');
-                } else if(steps.indexOf(currentStep) > index) {
-                    item.classList.add('completed');
-                }
-            });
-        }
-
-        // Event Listeners
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            const password = document.getElementById('password').value;
-            if(password === '123') {
-                showStep('config');
-            } else {
-                showError('authError', 'Invalid security credentials');
-            }
+    // File Processing - Mapping CSV
+    async function processMappingFile(e) {
+      const file = e.target.files[0];
+      const text = await file.text();
+      text.split('\n').forEach(row => {
+        const [key, value] = row.split(',').map(cell => cell.trim());
+        if (key && value) containerMap[key] = value;
+      });
+      document.getElementById('mappingStatus').innerHTML =
+        `<i class="fas fa-check-circle text-success"></i> Mapped ${Object.keys(containerMap).length} entries`;
+    }
+    // Process Bank File and store the text for refreshing later
+    async function processBankFile(e) {
+      const file = e.target.files[0];
+      bankFileText = await file.text();
+      processBankText(bankFileText);
+      showStep('preview');
+    }
+    // Function to process bank file text and update convertedData
+    function processBankText(text) {
+      const rows = text.split('\n').slice(1);
+      convertedData = [];
+      let gstCounter = config.gstStart;
+      let paymentCounter = config.paymentStart;
+      rows.forEach(row => {
+        const cells = row.split(',');
+        if (cells.length < 6) return;
+        const [date, narration, , , withdrawal, deposit] = cells;
+        const amount = deposit || withdrawal;
+        const isDeposit = !!deposit;
+        const voucherType = isDeposit ? config.gstType : config.paymentType;
+        const voucherNumber = isDeposit ? gstCounter++ : paymentCounter++;
+        const ledgerKey = Object.keys(containerMap).find(key =>
+          narration.toLowerCase().includes(key.toLowerCase())
+        ) || 'Unmapped';
+        // Entry for Ledger
+        convertedData.push({
+          voucherNumber,
+          date: date.trim(),
+          type: voucherType,
+          narration: narration.trim(),
+          ledger: containerMap[ledgerKey] || 'Needs Review',
+          amount: parseFloat(amount),
+          drcr: isDeposit ? 'Cr' : 'Dr'
         });
-
-        document.getElementById('saveConfig').addEventListener('click', () => {
-            config.gstStart = parseInt(document.getElementById('gstStart').value);
-            config.paymentStart = parseInt(document.getElementById('paymentStart').value);
-            config.bankName = document.getElementById('bankName').value;
-            config.gstType = document.getElementById('gstVoucherType').value;
-            config.paymentType = document.getElementById('paymentVoucherType').value;
-
-            if(!validateConfig()) return;
-            showStep('upload');
+        // Entry for Bank Account
+        convertedData.push({
+          voucherNumber: '',
+          date: '',
+          type: '',
+          narration: '',
+          ledger: config.bankName,
+          amount: parseFloat(amount),
+          drcr: isDeposit ? 'Dr' : 'Cr'
         });
-
-        document.getElementById('mappingFile').addEventListener('change', processMappingFile);
-        document.getElementById('bankFile').addEventListener('change', processBankFile);
-        document.getElementById('exportBtn').addEventListener('click', exportToExcel);
-
-        // File Processing
-        async function processMappingFile(e) {
-            const file = e.target.files[0];
-            const text = await file.text();
-            
-            text.split('\n').forEach(row => {
-                const [key, value] = row.split(',').map(cell => cell.trim());
-                if(key && value) containerMap[key] = value;
-            });
-
-            document.getElementById('mappingStatus').innerHTML = 
-                `<i class="fas fa-check-circle text-success"></i> Mapped ${Object.keys(containerMap).length} entries`;
-        }
-
-        async function processBankFile(e) {
-            const file = e.target.files[0];
-            const text = await file.text();
-            const rows = text.split('\n').slice(1);
-            
-            convertedData = [];
-            let gstCounter = config.gstStart;
-            let paymentCounter = config.paymentStart;
-
-            rows.forEach(row => {
-                const cells = row.split(',');
-                if(cells.length < 6) return;
-
-                const [date, narration, , , withdrawal, deposit] = cells;
-                const amount = deposit || withdrawal;
-                const isDeposit = !!deposit;
-                
-                const voucherType = isDeposit ? config.gstType : config.paymentType;
-                const voucherNumber = isDeposit ? gstCounter++ : paymentCounter++;
-                
-                const ledgerKey = Object.keys(containerMap).find(key => 
-                    narration.toLowerCase().includes(key.toLowerCase())
-                ) || 'Unmapped';
-
-                // Entry for Ledger
-                convertedData.push({
-                    voucherNumber,
-                    date: date.trim(),
-                    type: voucherType,
-                    narration: narration.trim(),
-                    ledger: containerMap[ledgerKey] || 'Needs Review',
-                    amount: parseFloat(amount),
-                    drcr: isDeposit ? 'Cr' : 'Dr'
-                });
-
-                // Entry for Bank Account
-                convertedData.push({
-                    voucherNumber: '',
-                    date: '',
-                    type: '',
-                    narration: '',
-                    ledger: config.bankName,
-                    amount: parseFloat(amount),
-                    drcr: isDeposit ? 'Dr' : 'Cr'
-                });
-            });
-
-            updatePreview();
-            showStep('preview');
-        }
-
-        // Preview Generation
-        function updatePreview() {
-            const tbody = document.getElementById('previewBody');
-            tbody.innerHTML = '';
-            
-            convertedData.forEach(entry => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${entry.voucherNumber}</td>
-                    <td>${entry.date}</td>
-                    <td>${entry.type}</td>
-                    <td>${entry.narration}</td>
-                    <td>${entry.ledger}</td>
-                    <td>${entry.amount.toFixed(2)}</td>
-                    <td>${entry.drcr}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Export Functionality
-        function exportToExcel() {
-            const ws = XLSX.utils.json_to_sheet(convertedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Tally Data");
-            XLSX.writeFile(wb, "tally_export.xlsx");
-        }
-
-        // Validation Functions
-        function validateConfig() {
-            if(!config.bankName || !config.gstType || !config.paymentType) {
-                showError('configError', 'All bank configuration fields are required');
-                return false;
-            }
-            return true;
-        }
-
-        function showError(elementId, message) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.style.display = 'block';
-            setTimeout(() => element.style.display = 'none', 3000);
-        }
-
-        // Initial Setup
-        updateNavigation();
-    </script>
-
-    <!-- Security Checks -->
-    <script>
-        function checkIntegrity() {
-            const validLogo = document.querySelector('.logo-section img').src === 
-                'https://www.growbrandindia.in/web/image/website/1/logo/growbrandindia.in?unique=58ac854';
-            
-            const validTitle = document.querySelector('.logo-section h3').textContent === 
-                'Bank to Tally Converter';
-
-            if(!validLogo || !validTitle) {
-                document.body.innerHTML = `
-                    <div style="padding: 50px; text-align: center; color: white; background: #dc3545;">
-                        <h2>Security Violation Detected</h2>
-                        <p>This instance has been disabled due to unauthorized modifications</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Run integrity checks periodically
-        setInterval(checkIntegrity, 5000);
-        document.addEventListener('DOMContentLoaded', checkIntegrity);
-
-        // Prevent developer tools
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if(e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
-                e.preventDefault();
-            }
-        });
-    </script>
+      });
+      updatePreview();
+    }
+    // Refresh Data using stored bank file text and updated configuration settings
+    function refreshData() {
+      if (!bankFileText) {
+        alert("No bank file data available to refresh!");
+        return;
+      }
+      processBankText(bankFileText);
+    }
+    // Preview Generation
+    function updatePreview() {
+      const tbody = document.getElementById('previewBody');
+      tbody.innerHTML = '';
+      convertedData.forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${entry.voucherNumber}</td>
+          <td>${entry.date}</td>
+          <td>${entry.type}</td>
+          <td>${entry.narration}</td>
+          <td>${entry.ledger}</td>
+          <td>${entry.amount.toFixed(2)}</td>
+          <td>${entry.drcr}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+    // Export Functionality
+    function exportToExcel() {
+      const ws = XLSX.utils.json_to_sheet(convertedData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Tally Data");
+      XLSX.writeFile(wb, "tally_export.xlsx");
+    }
+    // Validation Functions
+    function validateConfig() {
+      if (!config.bankName || !config.gstType || !config.paymentType) {
+        showError('configError', 'All bank configuration fields are required');
+        return false;
+      }
+      return true;
+    }
+    function showError(elementId, message) {
+      const element = document.getElementById(elementId);
+      element.textContent = message;
+      element.style.display = 'block';
+      setTimeout(() => (element.style.display = 'none'), 3000);
+    }
+    // Initial Setup
+    updateNavigation();
+  </script>
+  <!-- Security Checks -->
+  <script>
+    function checkIntegrity() {
+      const validLogo =
+        document.querySelector('.logo-section img').src ===
+        'https://www.growbrandindia.in/web/image/website/1/logo/growbrandindia.in?unique=58ac854';
+      const validTitle =
+        document.querySelector('.logo-section h3').textContent === 'Bank to Tally Converter';
+      if (!validLogo || !validTitle) {
+        document.body.innerHTML = `
+          <div style="padding: 50px; text-align: center; color: white; background: #dc3545;">
+              <h2>Security Violation Detected</h2>
+              <p>This instance has been disabled due to unauthorized modifications</p>
+          </div>
+        `;
+      }
+    }
+    // Run integrity checks periodically
+    setInterval(checkIntegrity, 5000);
+    document.addEventListener('DOMContentLoaded', checkIntegrity);
+    // Prevent developer tools
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </body>
 <!-- WhatsApp Chat Button with Chat Bubble -->
 <a href="https://wa.me/918826155917" target="_blank" class="whatsapp-chat-btn" style="position: fixed; bottom: 20px; right: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-    <!-- WhatsApp Icon -->
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 70px; height: 70px; border-radius: 50%; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">
-    <!-- Chat Bubble with Text -->
-    <div style="background-color: #551a8b; color: white; padding: 10px 20px; border-radius: 20px; font-size: 16px; white-space: nowrap;">
-        Customize Tool?
-    </div>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 70px; height: 70px; border-radius: 50%; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);" />
+  <div style="background-color: #551a8b; color: white; padding: 10px 20px; border-radius: 20px; font-size: 16px; white-space: nowrap;">
+    Customize Tool?
+  </div>
 </a>
